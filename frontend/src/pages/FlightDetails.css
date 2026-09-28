@@ -1,0 +1,362 @@
+.details-page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 30px 20px;
+  background: #f5f7fa;
+  min-height: calc(100vh - 70px);
+}
+
+.back-btn {
+  background: white;
+  border: 1px solid #D9E2E8;
+  padding: 8px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #12263A;
+  font-weight: 600;
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+  background: #12263A;
+  color: white;
+}
+
+/* Flight Header */
+.flight-header-card {
+  background: linear-gradient(135deg, #12263A 0%, #2E86AB 100%);
+  color: white;
+  border-radius: 12px;
+  padding: 25px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.header-airline {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.airline-logo-large {
+  width: 60px;
+  height: 60px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
+
+.header-airline h2 {
+  font-size: 22px;
+  margin-bottom: 4px;
+}
+
+.header-airline p {
+  opacity: 0.85;
+  font-size: 13px;
+}
+
+.refundable-large {
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.refundable-large.yes {
+  background: rgba(209, 250, 229, 0.9);
+  color: #065F46;
+}
+
+.refundable-large.no {
+  background: rgba(254, 226, 226, 0.9);
+  color: #991B1B;
+}
+
+/* Route Card */
+.route-card {
+  background: white;
+  border-radius: 12px;
+  padding: 35px 40px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+
+.route-timeline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.route-point {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.point-marker {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #2E86AB;
+  border: 3px solid #EAF4FA;
+}
+
+.point-marker.end {
+  background: #F2A541;
+  border-color: #FEF3E2;
+}
+
+.point-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.point-time {
+  font-size: 22px;
+  font-weight: 700;
+  color: #12263A;
+}
+
+.point-city {
+  font-size: 15px;
+  color: #12263A;
+  font-weight: 600;
+}
+
+.point-label {
+  font-size: 11px;
+  color: #5A6B7A;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.route-line {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  margin: 0 30px;
+}
+
+.route-line::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background: repeating-linear-gradient(to right, #D9E2E8 0, #D9E2E8 8px, transparent 8px, transparent 16px);
+  top: 50%;
+}
+
+.line-icon {
+  background: white;
+  padding: 0 10px;
+  position: relative;
+  z-index: 1;
+  font-size: 18px;
+}
+
+.line-duration {
+  background: white;
+  padding: 0 10px;
+  position: relative;
+  z-index: 1;
+  font-size: 12px;
+  color: #5A6B7A;
+  margin-top: 8px;
+}
+
+/* Details Grid */
+.details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.details-section {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+
+.details-section h3 {
+  color: #12263A;
+  font-size: 16px;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #EAF4FA;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #F0F4F7;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  color: #5A6B7A;
+  font-size: 14px;
+}
+
+.info-value {
+  color: #12263A;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.info-value.green { color: #065F46; }
+.info-value.red { color: #991B1B; }
+.info-value.highlight { color: #F2A541; }
+
+/* Baggage */
+.baggage-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: #EAF4FA;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.baggage-icon {
+  font-size: 28px;
+}
+
+.baggage-title {
+  font-size: 12px;
+  color: #5A6B7A;
+  text-transform: uppercase;
+}
+
+.baggage-value {
+  font-weight: 600;
+  color: #12263A;
+  font-size: 14px;
+}
+
+/* Fare Summary */
+.fare-summary-card {
+  background: white;
+  border-radius: 12px;
+  padding: 25px 30px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.fare-breakdown {
+  flex: 1;
+}
+
+.fare-breakdown h3 {
+  color: #12263A;
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+
+.fare-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  color: #5A6B7A;
+  font-size: 14px;
+}
+
+.fare-row.total {
+  border-top: 2px solid #EAF4FA;
+  margin-top: 10px;
+  padding-top: 12px;
+  color: #12263A;
+  font-weight: 700;
+  font-size: 20px;
+}
+
+.book-now-btn {
+  background: #F2A541;
+  color: #12263A;
+  border: none;
+  padding: 16px 40px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-left: 30px;
+}
+
+.book-now-btn:hover {
+  background: #e0942f;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(242, 165, 65, 0.4);
+}
+
+/* Loading */
+.loading-container, .error-container {
+  text-align: center;
+  padding: 100px 20px;
+}
+
+.loading-container .spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #EAF4FA;
+  border-top-color: #2E86AB;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fare-summary-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+  }
+
+  .book-now-btn {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .flight-header-card {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+
+  .route-timeline {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .route-line {
+    transform: rotate(90deg);
+    margin: 20px 0;
+    height: 40px;
+  }
+}

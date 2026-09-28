@@ -1,0 +1,237 @@
+.status-page {
+  min-height: calc(100vh - 70px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f7fa;
+  padding: 40px 20px;
+}
+
+.status-card {
+  background: white;
+  border-radius: 16px;
+  padding: 50px 40px;
+  max-width: 520px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  animation: popIn 0.5s ease-out;
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.status-icon {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  font-weight: 700;
+  margin: 0 auto 25px;
+  color: white;
+}
+
+.success-icon {
+  background: linear-gradient(135deg, #10B981, #059669);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.35);
+}
+
+.failure-icon {
+  background: linear-gradient(135deg, #EF4444, #DC2626);
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.35);
+}
+
+.status-card h1 {
+  font-size: 28px;
+  color: #12263A;
+  margin-bottom: 14px;
+}
+
+.status-card.success h1 {
+  color: #065F46;
+}
+
+.status-card.failure h1 {
+  color: #991B1B;
+}
+
+.status-message {
+  color: #5A6B7A;
+  font-size: 15px;
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+
+.booking-ref {
+  background: #EAF4FA;
+  border-radius: 10px;
+  padding: 15px 20px;
+  margin-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ref-label {
+  font-size: 12px;
+  color: #5A6B7A;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.ref-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #12263A;
+  letter-spacing: 0.5px;
+}
+
+.status-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.status-btn {
+  flex: 1;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.status-btn.primary {
+  background: #F2A541;
+  color: #12263A;
+}
+
+.status-btn.primary:hover {
+  background: #e0942f;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(242, 165, 65, 0.4);
+}
+
+.status-btn.secondary {
+  background: #EAF4FA;
+  color: #2E86AB;
+}
+
+.status-btn.secondary:hover {
+  background: #D9E9F2;
+  transform: translateY(-2px);
+}
+
+.status-note {
+  font-size: 13px;
+  color: #8a94a0;
+  line-height: 1.5;
+  border-top: 1px solid #EAF4FA;
+  padding-top: 20px;
+}
+
+.status-note strong {
+  color: #12263A;
+}
+
+@media (max-width: 480px) {
+  .status-card {
+    padding: 35px 25px;
+  }
+
+  .status-actions {
+    flex-direction: column;
+  }
+
+  .status-icon {
+    width: 70px;
+    height: 70px;
+    font-size: 36px;
+  }
+
+  .status-card h1 {
+    font-size: 24px;
+  }
+}
+/* Download Buttons */
+.download-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.download-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  border: 2px solid #EAF4FA;
+  border-radius: 12px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.download-btn:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.download-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ticket-btn:hover:not(:disabled) {
+  border-color: #2E86AB;
+  background: #F0F9FD;
+}
+
+.invoice-btn:hover:not(:disabled) {
+  border-color: #F2A541;
+  background: #FEF9F0;
+}
+
+.download-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.download-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.download-text strong {
+  color: #12263A;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.download-text span {
+  color: #5A6B7A;
+  font-size: 11px;
+}
+
+@media (max-width: 480px) {
+  .download-actions {
+    flex-direction: column;
+  }
+}
