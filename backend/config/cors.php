@@ -5,7 +5,7 @@ return [
     'allowed_methods' => ['*'],
     'allowed_origins' => [
     'http://localhost:5173',
-    'https://life-tours-travels.vercel.app',  // ← your actual Vercel URL
+    'https://life-toursand-travels.vercel.app/',  // ← your actual Vercel URL
 ],
     'allowed_origins_patterns' => [],
     'allowed_headers' => ['*'],
