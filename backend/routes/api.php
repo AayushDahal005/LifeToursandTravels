@@ -9,6 +9,8 @@ use App\Http\Controllers\Admin\FlightController as AdminFlightController;
 use App\Http\Controllers\Admin\BookingController as AdminBookingController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,7 +25,50 @@ use Illuminate\Support\Facades\Route;
 // Auth routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+/*
+|--------------------------------------------------------------------------
+| TEMPORARY SETUP ROUTE — DELETE THIS AFTER USE
+|--------------------------------------------------------------------------
+| Visit: /api/setup-db?secret=lifetours-setup-2026
+*/
+Route::get('/setup-db', function (Request $request) {
+    if ($request->query('secret') !== 'lifetours-setup-2026') {
+        abort(404);
+    }
 
+    $results = [];
+
+    try {
+        Artisan::call('migrate', ['--force' => true]);
+        $results['migrate'] = Artisan::output();
+    } catch (\Exception $e) {
+        $results['migrate_error'] = $e->getMessage();
+    }
+
+    try {
+        Artisan::call('db:seed', ['--class' => 'AdminSeeder', '--force' => true]);
+        $results['admin_seeder'] = Artisan::output();
+    } catch (\Exception $e) {
+        $results['admin_seeder_error'] = $e->getMessage();
+    }
+
+    try {
+        if (\App\Models\Flight::count() === 0) {
+            Artisan::call('db:seed', ['--class' => 'FlightSeeder', '--force' => true]);
+            Artisan::call('db:seed', ['--class' => 'ReturnFlightSeeder', '--force' => true]);
+            $results['flight_seeders'] = 'seeded';
+        } else {
+            $results['flight_seeders'] = 'already seeded — skipped';
+        }
+    } catch (\Exception $e) {
+        $results['flight_seeders_error'] = $e->getMessage();
+    }
+
+    $results['user_count'] = \App\Models\User::count();
+    $results['flight_count'] = \App\Models\Flight::count();
+
+    return response()->json($results);
+});
 // Flight routes (public - search doesn't need auth)
 Route::get('/flights', [FlightController::class, 'index']);
 Route::get('/flights/search', [FlightController::class, 'search']);
