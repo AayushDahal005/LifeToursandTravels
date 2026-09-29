@@ -13,24 +13,24 @@ class BookingController extends Controller
      * List the authenticated user's bookings
      */
     public function myBookings()
-    {
-        $bookings = Booking::with('flight')
-            ->where('user_id', Auth::id())
-            ->latest()
-            ->get();
+{
+    $bookings = Booking::with(['flight', 'returnFlight'])
+        ->where('user_id', Auth::id())
+        ->latest()
+        ->get();
 
-        return response()->json([
-            'success'  => true,
-            'bookings' => $bookings,
-        ]);
-    }
+    return response()->json([
+        'success' => true,
+        'bookings' => $bookings,
+    ]);
+}
 
     /**
      * Download e-ticket PDF
      */
     public function downloadTicket($id)
     {
-        $booking = Booking::with('flight', 'user')->find($id);
+        $booking = Booking::with('flight','returnFlight', 'user')->find($id);
 
         if (!$booking) {
             return response()->json(['message' => 'Booking not found'], 404);
@@ -70,7 +70,7 @@ class BookingController extends Controller
      */
     public function downloadInvoice($id)
     {
-        $booking = Booking::with('flight', 'user')->find($id);
+        $booking = Booking::with('flight','returnFlight', 'user')->find($id);
 
         if (!$booking) {
             return response()->json(['message' => 'Booking not found'], 404);

@@ -10,15 +10,21 @@ function Booking() {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user'));
 
-  const [flight, setFlight] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [submitting, setSubmitting] = useState(false);
+  // Round-trip params from URL
+  const returnId = searchParams.get('returnId');
+  const tripType = searchParams.get('tripType') || 'oneway';
+  const isRoundTrip = tripType === 'roundtrip' && returnId;
 
   // Passenger counts from URL
   const adultsCount = parseInt(searchParams.get('adults')) || 1;
   const childrenCount = parseInt(searchParams.get('children')) || 0;
   const totalPassengers = adultsCount + childrenCount;
+
+  const [flight, setFlight] = useState(null);
+  const [returnFlight, setReturnFlight] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   // Passenger details array
   const [passengers, setPassengers] = useState(
@@ -53,14 +59,39 @@ function Booking() {
   // Error states
   const [formErrors, setFormErrors] = useState({});
 
+  // Fetch flight(s) on mount or when id/returnId changes
   useEffect(() => {
     fetchFlight();
-  }, [id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, returnId]);
+
+  // Reset passenger forms if passenger counts change
+  useEffect(() => {
+    setPassengers(
+      Array.from({ length: totalPassengers }, (_, i) => ({
+        title: 'Mr.',
+        fullName: '',
+        dob: '',
+        gender: 'Male',
+        nationality: 'Nepali',
+        passportNumber: '',
+        type: i < adultsCount ? 'Adult' : 'Child',
+      }))
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, adultsCount, childrenCount]);
 
   const fetchFlight = async () => {
     try {
       const response = await api.get(`/flights/${id}`);
       setFlight(response.data.flight);
+
+      if (returnId) {
+        const returnRes = await api.get(`/flights/${returnId}`);
+        setReturnFlight(returnRes.data.flight);
+      } else {
+        setReturnFlight(null);
+      }
     } catch (err) {
       console.error('Error fetching flight:', err);
       setError('Failed to load flight details');
@@ -192,8 +223,11 @@ function Booking() {
   const calculateFare = () => {
     if (!flight) return { subtotal: 0, discount: 0, vat: 0, total: 0, baseFare: 0 };
 
-    const baseFare = Number(flight.fare);
-    const subtotal = baseFare * totalPassengers;
+    const outboundFare = Number(flight.fare);
+    const returnFare = returnFlight ? Number(returnFlight.fare) : 0;
+    const farePerPassenger = outboundFare + returnFare;
+
+    const subtotal = farePerPassenger * totalPassengers;
     const discountAmount = (subtotal * promoDiscount) / 100;
     const afterDiscount = subtotal - discountAmount;
     const vat = wantVatBill ? afterDiscount * 0.13 : 0;
@@ -204,7 +238,7 @@ function Booking() {
       discount: discountAmount,
       vat,
       total,
-      baseFare,
+      baseFare: farePerPassenger,
     };
   };
 
@@ -224,6 +258,8 @@ function Booking() {
 
       const bookingData = {
         flight_id: flight.id,
+        return_flight_id: returnId || null,
+        is_round_trip: isRoundTrip ? true : false,
         passengers: passengers,
         contact: contact,
         base_fare: fareData.subtotal,
@@ -244,7 +280,6 @@ function Booking() {
 
       console.log('Redirecting to Khalti:', response.data.payment_url);
       window.location.href = response.data.payment_url;
-
     } catch (err) {
       console.error('Payment error:', err);
       console.error('Response:', err.response?.data);
@@ -305,16 +340,22 @@ function Booking() {
             ← Back to Flight
           </button>
           <h1>Complete Your Booking</h1>
-          <p>Fill in passenger details to confirm your flight</p>
+          <p>
+            Fill in passenger details to confirm your flight
+            {isRoundTrip && ' (Round Trip)'}
+          </p>
         </div>
 
-        {/* Flight Summary Card */}
+        {/* Outbound Flight Summary Card */}
         <div className="flight-summary">
           <div className="summary-airline">
             <div className="summary-icon">✈️</div>
             <div>
               <h3>{flight.airline}</h3>
-              <p>{flight.flight_number} • {flight.aircraft}</p>
+              <p>
+                {isRoundTrip && 'Outbound • '}
+                {flight.flight_number} • {flight.aircraft}
+              </p>
             </div>
           </div>
           <div className="summary-route">
@@ -329,6 +370,36 @@ function Booking() {
             </div>
           </div>
         </div>
+
+        {/* Return Flight Summary Card (round trips only) */}
+        {isRoundTrip && returnFlight && (
+          <div
+            className="flight-summary return-summary"
+            style={{
+              marginTop: '15px',
+              background: 'linear-gradient(135deg, #2E86AB 0%, #12263A 100%)',
+            }}
+          >
+            <div className="summary-airline">
+              <div className="summary-icon">🔄</div>
+              <div>
+                <h3>{returnFlight.airline}</h3>
+                <p>Return • {returnFlight.flight_number} • {returnFlight.aircraft}</p>
+              </div>
+            </div>
+            <div className="summary-route">
+              <div className="route-point">
+                <span className="route-time">{formatTime(returnFlight.departure_time)}</span>
+                <span className="route-city">{returnFlight.from_city}</span>
+              </div>
+              <div className="route-arrow">→</div>
+              <div className="route-point">
+                <span className="route-time">{formatTime(returnFlight.arrival_time)}</span>
+                <span className="route-city">{returnFlight.to_city}</span>
+              </div>
+            </div>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}>
           {/* ===== PASSENGER DETAILS ===== */}
@@ -552,7 +623,10 @@ function Booking() {
             <h2>Fare Summary</h2>
 
             <div className="fare-row">
-              <span>Base Fare ({totalPassengers} × Rs. {fare.baseFare.toLocaleString()})</span>
+              <span>
+                Base Fare ({totalPassengers} × Rs. {fare.baseFare.toLocaleString()})
+                {isRoundTrip && ' — incl. return'}
+              </span>
               <span>Rs. {fare.subtotal.toLocaleString()}</span>
             </div>
 

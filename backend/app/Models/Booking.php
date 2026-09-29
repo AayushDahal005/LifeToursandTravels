@@ -12,6 +12,8 @@ class Booking extends Model
     protected $fillable = [
         'user_id',
         'flight_id',
+        'return_flight_id',
+        'is_round_trip',
         'passengers',
         'contact',
         'base_fare',
@@ -30,6 +32,7 @@ class Booking extends Model
         'passengers' => 'array',
         'contact' => 'array',
         'want_vat_bill' => 'boolean',
+        'is_round_trip' => 'boolean',
         'paid_at' => 'datetime',
         'base_fare' => 'decimal:2',
         'discount' => 'decimal:2',
@@ -37,15 +40,18 @@ class Booking extends Model
         'total_amount' => 'decimal:2',
     ];
 
-    // Relationship to user
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // Relationship to flight
     public function flight()
     {
         return $this->belongsTo(Flight::class);
+    }
+
+    public function returnFlight()
+    {
+        return $this->belongsTo(Flight::class, 'return_flight_id');
     }
 }

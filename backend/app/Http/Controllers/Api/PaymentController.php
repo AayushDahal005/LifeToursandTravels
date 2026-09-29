@@ -25,30 +25,34 @@ class PaymentController extends Controller
     public function initiatePayment(Request $request)
     {
         $request->validate([
-            'flight_id'       => 'required|exists:flights,id',
-            'passengers'      => 'required|array|min:1',
-            'contact'         => 'required|array',
-            'base_fare'       => 'required|numeric|min:0',
-            'discount'        => 'nullable|numeric|min:0',
-            'vat'             => 'nullable|numeric|min:0',
-            'total_amount'    => 'required|numeric|min:1',
-            'promo_code'      => 'nullable|string',
-            'want_vat_bill'   => 'boolean',
+            'flight_id'         => 'required|exists:flights,id',
+            'return_flight_id'  => 'nullable|exists:flights,id',
+            'is_round_trip'     => 'boolean',
+            'passengers'        => 'required|array|min:1',
+            'contact'           => 'required|array',
+            'base_fare'         => 'required|numeric|min:0',
+            'discount'          => 'nullable|numeric|min:0',
+            'vat'               => 'nullable|numeric|min:0',
+            'total_amount'      => 'required|numeric|min:1',
+            'promo_code'        => 'nullable|string',
+            'want_vat_bill'     => 'boolean',
         ]);
 
         // 1. Create the booking record (pending payment)
         $booking = Booking::create([
-            'user_id'         => Auth::id(),
-            'flight_id'       => $request->flight_id,
-            'passengers'      => $request->passengers,
-            'contact'         => $request->contact,
-            'base_fare'       => $request->base_fare,
-            'discount'        => $request->discount ?? 0,
-            'vat'             => $request->vat ?? 0,
-            'total_amount'    => $request->total_amount,
-            'promo_code'      => $request->promo_code,
-            'want_vat_bill'   => $request->want_vat_bill ?? false,
-            'payment_status'  => 'pending',
+            'user_id'          => Auth::id(),
+            'flight_id'        => $request->flight_id,
+            'return_flight_id' => $request->return_flight_id,
+            'is_round_trip'    => $request->is_round_trip ?? false,
+            'passengers'       => $request->passengers,
+            'contact'          => $request->contact,
+            'base_fare'        => $request->base_fare,
+            'discount'         => $request->discount ?? 0,
+            'vat'              => $request->vat ?? 0,
+            'total_amount'     => $request->total_amount,
+            'promo_code'       => $request->promo_code,
+            'want_vat_bill'    => $request->want_vat_bill ?? false,
+            'payment_status'   => 'pending',
         ]);
 
         // 2. Generate unique transaction UUID tied to the booking
@@ -67,7 +71,8 @@ class PaymentController extends Controller
             'website_url'         => env('FRONTEND_URL', 'http://localhost:5173'),
             'amount'              => $amountInPaisa,
             'purchase_order_id'   => $transactionUuid,
-            'purchase_order_name' => 'Flight Booking #' . $booking->id,
+            'purchase_order_name' => 'Flight Booking #' . $booking->id
+                                    . ($booking->is_round_trip ? ' (Round Trip)' : ''),
             'customer_info'       => [
                 'name'  => $request->contact['name'] ?? 'Guest',
                 'email' => $request->contact['email'] ?? 'guest@example.com',
@@ -119,12 +124,8 @@ class PaymentController extends Controller
     {
         $frontendUrl = env('FRONTEND_URL', 'http://localhost:5173');
 
-        // Khalti returns these query params on success:
-        // pidx, transaction_id, tid, amount, mobile, status,
-        // purchase_order_id, purchase_order_name
         $pidx            = $request->query('pidx');
         $purchaseOrderId = $request->query('purchase_order_id');
-        $status          = $request->query('status');
 
         if (!$pidx || !$purchaseOrderId) {
             return redirect($frontendUrl . '/payment-failure?reason=no_data');

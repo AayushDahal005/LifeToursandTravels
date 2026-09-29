@@ -11,24 +11,38 @@ class FlightController extends Controller
     /**
      * Search flights by from, to, and date
      */
-    public function search(Request $request)
-    {
-        $request->validate([
-            'from' => 'required|string',
-            'to' => 'required|string',
-        ]);
+   public function search(Request $request)
+{
+    $request->validate([
+        'from' => 'required|string',
+        'to' => 'required|string',
+        'trip_type' => 'nullable|in:oneway,roundtrip',
+    ]);
 
-        $flights = Flight::where('from_city', $request->from)
-            ->where('to_city', $request->to)
+    // Outbound flights
+    $outbound = Flight::where('from_city', $request->from)
+        ->where('to_city', $request->to)
+        ->orderBy('departure_time')
+        ->get();
+
+    // Return flights (only for round trip)
+    $returnFlights = [];
+    if ($request->trip_type === 'roundtrip') {
+        $returnFlights = Flight::where('from_city', $request->to)
+            ->where('to_city', $request->from)
             ->orderBy('departure_time')
             ->get();
-
-        return response()->json([
-            'success' => true,
-            'count' => $flights->count(),
-            'flights' => $flights,
-        ]);
     }
+
+    return response()->json([
+        'success' => true,
+        'count' => $outbound->count(),
+        'flights' => $outbound,                 // backward compat
+        'outbound' => $outbound,
+        'return_flights' => $returnFlights,
+        'trip_type' => $request->trip_type ?? 'oneway',
+    ]);
+}
 
     /**
      * Get flight details

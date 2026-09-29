@@ -352,3 +352,19 @@
     flex-direction: column;
   }
 }
+.bc-leg-tag {
+  display: inline-block;
+  background: #2E86AB;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+  margin-right: 10px;
+}
+
+.bc-leg-tag.return {
+  background: #F2A541;
+  color: #12263A;
+}

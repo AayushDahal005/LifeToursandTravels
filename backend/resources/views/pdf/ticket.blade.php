@@ -64,6 +64,28 @@
             padding-bottom: 6px;
             border-bottom: 2px solid #EAF4FA;
         }
+        .section-title.return {
+            color: #F2A541;
+            border-bottom-color: #FEF3E2;
+        }
+
+        /* Leg Badge (OUT / RET) */
+        .leg-badge {
+            display: inline-block;
+            background: #2E86AB;
+            color: white;
+            font-size: 9px;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 10px;
+            letter-spacing: 0.5px;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        .leg-badge.return {
+            background: #F2A541;
+            color: #12263A;
+        }
 
         /* Flight Info */
         .flight-route {
@@ -119,6 +141,14 @@
             font-weight: bold;
             font-size: 12px;
             margin-top: 2px;
+        }
+
+        /* Return Flight block */
+        .return-block {
+            background: #FEF9F0;
+            border-radius: 6px;
+            padding: 15px 20px;
+            margin-top: 15px;
         }
 
         /* Passengers Table */
@@ -199,7 +229,10 @@
         <div class="header">
             <div class="brand">
                 <h1>✈ Life Tours &amp; Travels Pvt Ltd.</h1>
-                <p>E-Ticket / Boarding Pass</p>
+                <p>
+                    E-Ticket / Boarding Pass
+                    @if($booking->is_round_trip) — Round Trip @endif
+                </p>
             </div>
             <div class="ref">
                 <div class="label">Booking Reference</div>
@@ -212,9 +245,16 @@
             ✓ BOOKING CONFIRMED — {{ strtoupper($booking->payment_method) }} PAYMENT
         </div>
 
-        {{-- FLIGHT DETAILS --}}
+        {{-- OUTBOUND FLIGHT --}}
         <div class="section">
-            <div class="section-title">Flight Details</div>
+            <div class="section-title">
+                @if($booking->is_round_trip)
+                    <span class="leg-badge">OUTBOUND</span>
+                    {{ $flight->from_city }} → {{ $flight->to_city }}
+                @else
+                    Flight Details
+                @endif
+            </div>
 
             <div class="flight-route">
                 <div class="point">
@@ -266,6 +306,68 @@
                 </div>
             </div>
         </div>
+
+        {{-- RETURN FLIGHT (Only for round trips) --}}
+        @if($booking->is_round_trip && !empty($returnFlight))
+        <div class="section">
+            <div class="section-title return">
+                <span class="leg-badge return">RETURN</span>
+                {{ $returnFlight->from_city }} → {{ $returnFlight->to_city }}
+            </div>
+
+            <div class="return-block">
+                <div class="flight-route">
+                    <div class="point">
+                        <div class="city">{{ $returnFlight->from_city }}</div>
+                        <div class="time">{{ \Carbon\Carbon::parse($returnFlight->departure_time)->format('h:i A') }}</div>
+                    </div>
+                    <div class="point center">
+                        <div class="arrow">✈  →</div>
+                        <div class="duration">{{ $returnFlight->duration }}</div>
+                    </div>
+                    <div class="point right">
+                        <div class="city">{{ $returnFlight->to_city }}</div>
+                        <div class="time">{{ \Carbon\Carbon::parse($returnFlight->arrival_time)->format('h:i A') }}</div>
+                    </div>
+                </div>
+
+                <div class="info-grid">
+                    <div class="row">
+                        <div class="cell">
+                            <div class="label">Airline</div>
+                            <div class="value">{{ $returnFlight->airline }}</div>
+                        </div>
+                        <div class="cell">
+                            <div class="label">Flight Number</div>
+                            <div class="value">{{ $returnFlight->flight_number }}</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="cell">
+                            <div class="label">Aircraft</div>
+                            <div class="value">{{ $returnFlight->aircraft }}</div>
+                        </div>
+                        <div class="cell">
+                            <div class="label">Travel Class</div>
+                            <div class="value">Economy</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="cell">
+                            <div class="label">Baggage Allowance</div>
+                            <div class="value">{{ $returnFlight->baggage }}</div>
+                        </div>
+                        <div class="cell">
+                            <div class="label">Refund Policy</div>
+                            <div class="value">
+                                {{ $returnFlight->refundable ? 'Refundable' : 'Non-refundable' }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
 
         {{-- PASSENGERS --}}
         <div class="section">
@@ -328,6 +430,9 @@
                 • Please arrive at the airport at least 1 hour before departure.<br>
                 • Carry a valid photo ID / Passport for all passengers.<br>
                 • This e-ticket is non-transferable and valid only for the date and time shown.<br>
+                @if($booking->is_round_trip)
+                • This is a round-trip booking — both outbound and return flights must be boarded.<br>
+                @endif
                 • For any assistance, contact us at +977-9810342647.
             </div>
         </div>

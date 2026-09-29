@@ -148,6 +148,9 @@ function MyBookings() {
                   <div className="bc-ref">
                     <span className="bc-ref-label">Reference</span>
                     <span className="bc-ref-value">{b.transaction_uuid}</span>
+                    {b.is_round_trip && (
+                      <span className="bc-trip-badge">⇄ Round Trip</span>
+                    )}
                   </div>
                   <span
                     className="bc-status"
@@ -163,7 +166,9 @@ function MyBookings() {
                 {/* Body */}
                 <div className="bc-body">
                   <div className="bc-left">
+                    {/* Outbound */}
                     <div className="bc-route">
+                      {b.is_round_trip && <span className="bc-leg-tag">OUT</span>}
                       <div className="bc-city">
                         <span className="bc-time">{formatTime(b.flight?.departure_time)}</span>
                         <span className="bc-city-name">{b.flight?.from_city}</span>
@@ -174,6 +179,22 @@ function MyBookings() {
                         <span className="bc-city-name">{b.flight?.to_city}</span>
                       </div>
                     </div>
+
+                    {/* Return */}
+                    {b.is_round_trip && b.return_flight && (
+                      <div className="bc-route" style={{ marginTop: 8 }}>
+                        <span className="bc-leg-tag return">RET</span>
+                        <div className="bc-city">
+                          <span className="bc-time">{formatTime(b.return_flight.departure_time)}</span>
+                          <span className="bc-city-name">{b.return_flight.from_city}</span>
+                        </div>
+                        <div className="bc-arrow">✈️ →</div>
+                        <div className="bc-city">
+                          <span className="bc-time">{formatTime(b.return_flight.arrival_time)}</span>
+                          <span className="bc-city-name">{b.return_flight.to_city}</span>
+                        </div>
+                      </div>
+                    )}
 
                     <div className="bc-meta">
                       <span><strong>{b.flight?.airline}</strong> • {b.flight?.flight_number}</span>
